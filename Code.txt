@@ -1,0 +1,59 @@
+#define LEFT 0
+#define RIGHT 1
+
+#define outputA 9 //rotary encoder channel A
+#define outputB 10 //rotary encoder channel B
+
+
+int counter = 0; 
+int aState;
+int aLastState;  
+
+
+void setup() {
+  Serial.begin(9600);
+  
+  pinMode(outputA, INPUT_PULLUP);
+  pinMode(outputB, INPUT_PULLUP);
+  
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  
+  aLastState = digitalRead(outputA);   
+  
+  rotate(LEFT);
+}
+
+void loop() {
+  aState = digitalRead(outputA);
+   if (aState != aLastState){     
+     if (digitalRead(outputB) != aState) { 
+       counter ++;
+       if(counter > 130) {
+         rotate(RIGHT);
+       }
+     } else {
+       counter --;
+        if(counter < 0) {
+         rotate(LEFT);
+       }
+     }
+     Serial.print("Position: ");
+     Serial.println(counter);
+   } 
+   aLastState = aState;
+  delay(10);
+}
+
+void rotate(int d) {
+  switch(d) {
+    case LEFT:
+    digitalWrite(5, HIGH);
+    digitalWrite(6, LOW);
+    break;
+	case RIGHT:
+    digitalWrite(5, LOW);
+    digitalWrite(6, HIGH);
+    break;
+  }
+}
